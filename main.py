@@ -1,55 +1,42 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""Simple Bot to reply to Telegram messages.
-This is built on the API wrapper, see echobot2.py to see the same example built
-on the telegram.ext bot framework.
-This program is dedicated to the public domain under the CC0 license.
-"""
-import logging
+# TOKEN: 1131987867:AAHJaISmTFrGqJ5Z1al80VY94Zim0gJVYiA
+
 import telegram
-from telegram.error import NetworkError, Unauthorized
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 from time import sleep
 
+import logging
+from telegram import update
 
-update_id = None
+hospital_name = 'Hospital Clinic'
 
+updater = Updater(token='1131987867:AAHJaISmTFrGqJ5Z1al80VY94Zim0gJVYiA', use_context=True)
 
-def main():
-    """Run the bot."""
-    global update_id
-    # Telegram Bot Authorization Token
-    bot = telegram.Bot('1131987867:AAHJaISmTFrGqJ5Z1al80VY94Zim0gJVYiA')
+dispatcher = updater.dispatcher
 
-    # get the first pending update_id, this is so we can skip over it in case
-    # we get an "Unauthorized" exception.
-    try:
-        update_id = bot.get_updates()[0].update_id
-    except IndexError:
-        update_id = None
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                     level=logging.INFO)
 
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+def start(update, context):
+    
+    keyboard = [[telegram.InlineKeyboardButton("Yes", callback_data='y'),
+                 telegram.InlineKeyboardButton("No", callback_data='n')]]
 
-    while True:
-        try:
-            echo(bot)
-        except NetworkError:
-            sleep(1)
-        except Unauthorized:
-            # The user has removed or blocked the bot.
-            update_id += 1
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I'm Coronita, a bot designed to get some nice messages across to COVID-19 patients at {}. \nWould you like to send a nice message to a random patient?".format(hospital_name), reply_markup=reply_markup)
 
+def button(update, context):
+    query = update.callback_query
 
-def echo(bot):
-    """Echo the message the user sent."""
-    global update_id
-    # Request updates after the last update_id
-    for update in bot.get_updates(offset=update_id, timeout=10):
-        update_id = update.update_id + 1
+    # CallbackQueries need to be answered, even if no notification to the user is needed
+    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+    query.answer()
 
-        if update.message:  # your bot can receive updates without messages
-            # Reply to the message
-            update.message.reply_text(update.message.text)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Selected option: {}".format(query.data))
 
+start_handler = CommandHandler('start', start)
+dispatcher.add_handler(start_handler)
 
-if __name__ == '__main__':
-    main()
+yesno_handeler = CallbackQueryHandler(button)
+dispatcher.add_handler(yesno_handeler)
+
+updater.start_polling()
