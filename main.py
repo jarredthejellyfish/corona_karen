@@ -17,24 +17,30 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                      level=logging.INFO)
 
 def start(update, context):
-    
-    keyboard = [[telegram.InlineKeyboardButton("Yes", callback_data='y'),
-                 telegram.InlineKeyboardButton("No", callback_data='n')]]
+    yn_keyboard = [[telegram.InlineKeyboardButton("Yes", callback_data='y1'),
+                    telegram.InlineKeyboardButton("No", callback_data='n1')]]
 
-    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+    reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
     context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I'm Coronita, a bot designed to get some nice messages across to COVID-19 patients at {}. \n\nWould you like to send a nice message to a random patient?".format(hospital_name), reply_markup=reply_markup)
+
+def get_info_question(query):
+    yn_keyboard = [[telegram.InlineKeyboardButton("Yes", callback_data='y2'),
+                    telegram.InlineKeyboardButton("No", callback_data='n2')]]
+
+    reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
+    query.edit_message_text(text="Awesome! Now I'm gonna ask you some simple questions, are you ready?".format(hospital_name), reply_markup=reply_markup)
 
 def button(update, context):
     query = update.callback_query
-
-    # CallbackQueries need to be answered, even if no notification to the user is needed
-    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     query.answer()
 
-    if query.data == 'y':
-        context.bot.send_message(chat_id=update.effective_chat.id, text="Awesome! Now I'm gonna ask you some simple questions, are you ready?".format(hospital_name), reply_markup=reply_markup)
-    elif query.data == 'n':
+    if query.data == 'y1':
+        get_info_question(query)
+    elif query.data == 'n1':
         print('Selcted no.')
+
+    if query.data == 'y2':
+        query.edit_message_text(text="Awesome! Now I'm gonna ask you some simple questions, are you ready?".format(hospital_name), reply_markup=reply_markup)
 
 
 start_handler = CommandHandler('start', start)
