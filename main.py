@@ -22,7 +22,7 @@ def start(update, context):
                  telegram.InlineKeyboardButton("No", callback_data='n')]]
 
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I'm Coronita, a bot designed to get some nice messages across to COVID-19 patients at {}. \nWould you like to send a nice message to a random patient?".format(hospital_name), reply_markup=reply_markup)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I'm Coronita, a bot designed to get some nice messages across to COVID-19 patients at {}. \n\nWould you like to send a nice message to a random patient?".format(hospital_name), reply_markup=reply_markup)
 
 def button(update, context):
     query = update.callback_query
@@ -31,7 +31,11 @@ def button(update, context):
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     query.answer()
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Selected option: {}".format(query.data))
+    if query.data == 'y':
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Awesome! Now I'm gonna ask you some simple questions, are you ready?".format(hospital_name), reply_markup=reply_markup)
+    elif query.data == 'n':
+        print('Selcted no.')
+
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
