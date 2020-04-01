@@ -1,4 +1,5 @@
-# TOKEN: 1131987867:AAHJaISmTFrGqJ5Z1al80VY94Zim0gJVYiA
+# TOKEN: 1016687786:AAF1HzqAaCYuwTi5itl1QvkWEetZ3l-Cs4w
+# BOT LINK: t.me/janet_companion_bot.
 
 import telegram
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, Filters, MessageHandler
@@ -8,8 +9,10 @@ from telegram import update
 from database_man import Database, User
 
 hospital_name = 'Hospital Clinic'
+bot_name = 'Janet'
+token = '1016687786:AAF1HzqAaCYuwTi5itl1QvkWEetZ3l-Cs4w'
 
-updater = Updater(token='1131987867:AAHJaISmTFrGqJ5Z1al80VY94Zim0gJVYiA', use_context=True)
+updater = Updater(token=token, use_context=True)
 
 dispatcher = updater.dispatcher
 
@@ -21,7 +24,7 @@ def start(update, context):
                     telegram.InlineKeyboardButton("No", callback_data='n1')]]
 
     reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I'm Coronita, a bot designed to get some nice messages across to COVID-19 patients at {}. \n\nWould you like to send a nice message to a random patient?".format(hospital_name), reply_markup=reply_markup)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I'm {}, a bot designed to get some nice messages across to COVID-19 patients at {}. \n\nWould you like to send a nice message to a random patient?".format(bot_name, hospital_name), reply_markup=reply_markup)
 
 def get_name(update, context):
     global name
@@ -38,7 +41,6 @@ def get_name(update, context):
 def get_name_again(update, context):
     global name
     name = update.message.text
-    print(name)
     dispatcher.remove_handler(plain_text_handler)
 
     yn_keyboard = [[telegram.InlineKeyboardButton("Yes", callback_data='y2'),
@@ -72,7 +74,6 @@ def get_message(update, context):
 def get_message_rewrite(update, context):
     global message
     message = update.message.text
-    print(len(message))
     dispatcher.remove_handler(plain_text_handler)
     if len(message) > 3000:
         message_too_long(update, context)
