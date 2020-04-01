@@ -61,7 +61,6 @@ def message_too_long(update, context):
 def get_message(update, context):
     global message
     message = update.message.text
-    print(len(message))
     dispatcher.remove_handler(plain_text_handler)
     if len(message) > 3000:
         message_too_long(update, context)
