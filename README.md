@@ -1,1 +1,2 @@
-Hi! Welcome to Coronita, a bot designed to gather and send messages to corona patients currently in hospitals around Barcelona.
+###Corona Karen
+Hi! Welcome to Karen, a bot designed to gather and send messages to COVID-19 patients currently in hospitals around Barcelona.
