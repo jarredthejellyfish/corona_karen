@@ -5,6 +5,7 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, Filters,
 from time import sleep
 import logging
 from telegram import update
+from database_man import Database, User
 
 hospital_name = 'Hospital Clinic'
 
@@ -64,7 +65,22 @@ def get_message(update, context):
     dispatcher.remove_handler(plain_text_handler)
     if len(message) > 3000:
         message_too_long(update, context)
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Beautiful message {}! I'm sure your message will be appreciated.".format(name), reply_markup=reply_markup)
+    yn_keyboard = [[telegram.InlineKeyboardButton("Send it!", callback_data='y4'),
+                    telegram.InlineKeyboardButton("Let me rewrite...", callback_data='n4')]]
+    reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Beautiful message {}! I'm sure your it will be appreciated.\nReady to send it or would you like to rewrite something?".format(name), reply_markup=reply_markup)
+
+def get_message_rewrite(update, context):
+    global message
+    message = update.message.text
+    print(len(message))
+    dispatcher.remove_handler(plain_text_handler)
+    if len(message) > 3000:
+        message_too_long(update, context)
+    yn_keyboard = [[telegram.InlineKeyboardButton("Send it!", callback_data='y4'),
+                    telegram.InlineKeyboardButton("Let me rewrite...", callback_data='n4')]]
+    reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Nice changes to your message {}! I'm sure your it will make someone feel great.\nReady to send it or would you like to rewrite something?".format(name), reply_markup=reply_markup)
 
 def button(update, context):
     global plain_text_handler
@@ -91,8 +107,16 @@ def button(update, context):
         plain_text_handler = MessageHandler(Filters.text, get_message)
         dispatcher.add_handler(plain_text_handler)
 
-
-
+    if query.data == 'y4':
+        query.edit_message_text(text="Yay! Your message was sent successfully!\nThank you for making someone's day better :)\nI hope to see you soon <3")
+        chat_id = update.effective_chat.id
+        db = Database('database.csv')
+        new_user = User(chat_id, name, message)
+        db.store_user(new_user)
+    if query.data == 'n4':
+        query.edit_message_text(text="Please send your rewritten message now.")
+        plain_text_handler = MessageHandler(Filters.text, get_message_rewrite)
+        dispatcher.add_handler(plain_text_handler)
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
