@@ -1,5 +1,5 @@
 # TOKEN: 1183378895:AAFoJKGUoXOAX4dp1oPWws3h6Wl6DM08rTA
-# BOT LINK: t.me/crona_karen_bot..
+# BOT LINK: t.me/crona_karen_bot
 
 import telegram
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, Filters, MessageHandler
@@ -20,7 +20,7 @@ dispatcher = updater.dispatcher
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 
-@run_async
+
 def start(update, context):
     yn_keyboard = [[telegram.InlineKeyboardButton("Yes", callback_data='y1'),
                     telegram.InlineKeyboardButton("No", callback_data='n1')]]
@@ -28,7 +28,7 @@ def start(update, context):
     reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
     context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I'm {}, a bot designed to get some nice messages across to COVID-19 patients at {}. \n\nWould you like to send a nice message to a random patient?".format(bot_name, hospital_name), reply_markup=reply_markup)
 
-@run_async
+
 def get_name(update, context):
     global name
     name = update.message.text
@@ -41,7 +41,7 @@ def get_name(update, context):
     name_text = "Nice to meet you <b>{}</b>! I'm excited to get your message to one of our patients!\nDid I get your name right?".format(name)
     query.edit_message_text(parse_mode='HTML', text=name_text, reply_markup=reply_markup)
 
-@run_async
+
 def get_name_again(update, context):
     global name
     name = update.message.text
@@ -54,13 +54,13 @@ def get_name_again(update, context):
     name_text = "Got it <b>{}</b>! I'm really happy to get your message to one of our patients!\nDid I get your name right?".format(name)
     query.edit_message_text(parse_mode='HTML', text=name_text, reply_markup=reply_markup)
 
-@run_async
+
 def ask_if_message_ready(update, context):
     yn_keyboard = [[telegram.InlineKeyboardButton("Ready", callback_data='y3')]]
     reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
     query.edit_message_text(text='Cool! Do you have the message you want to send ready?\nHere are some of the guidelines it should follow:\n- Be positive.\n- Keep it under 3000 characters.\n- Avoid talking about the virus.', reply_markup=reply_markup)
 
-@run_async
+
 def message_too_long(update, context):
     yn_keyboard = [[telegram.InlineKeyboardButton("Ready", callback_data='y3')]]
     reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
@@ -78,7 +78,7 @@ def get_message(update, context):
     reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
     context.bot.send_message(chat_id=update.effective_chat.id, text="Beautiful message {}! I'm sure your it will be appreciated.\nReady to send it or would you like to rewrite something?".format(name), reply_markup=reply_markup)
 
-@run_async
+
 def get_message_rewrite(update, context):
     global message
     message = update.message.text
