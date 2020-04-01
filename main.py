@@ -1,5 +1,5 @@
-# TOKEN: 1016687786:AAF1HzqAaCYuwTi5itl1QvkWEetZ3l-Cs4w
-# BOT LINK: t.me/janet_companion_bot.
+# TOKEN: 1183378895:AAFoJKGUoXOAX4dp1oPWws3h6Wl6DM08rTA
+# BOT LINK: t.me/crona_karen_bot..
 
 import telegram
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, Filters, MessageHandler
@@ -9,8 +9,8 @@ from telegram import update
 from database_man import Database, User
 
 hospital_name = 'Hospital Clinic'
-bot_name = 'Janet'
-token = '1016687786:AAF1HzqAaCYuwTi5itl1QvkWEetZ3l-Cs4w'
+bot_name = 'Karen'
+token = '1183378895:AAFoJKGUoXOAX4dp1oPWws3h6Wl6DM08rTA'
 
 updater = Updater(token=token, use_context=True)
 
@@ -109,6 +109,7 @@ def button(update, context):
 
     if query.data == 'y4':
         query.edit_message_text(text="Yay! Your message was sent successfully!\nThank you for making someone's day better :)\nI hope to see you soon <3")
+        context.bot.send_photo(chat_id=update.effective_chat.id, photo='https://66.media.tumblr.com/c07d5a8b7b6d8a16fda81852307b7828/tumblr_inline_os2hl4YXrK1sp11ym_540.png')
         chat_id = update.effective_chat.id
         db = Database('database.csv')
         new_user = User(chat_id, name, message)
