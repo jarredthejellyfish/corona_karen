@@ -51,7 +51,7 @@ def get_name_again(update, context):
 def ask_if_message_ready(update, context):
     yn_keyboard = [[telegram.InlineKeyboardButton("Ready", callback_data='y3')]]
     reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
-    query.edit_message_text(text='Cool! Do you have the message you want to send ready?\nHere are some of the guidelines it should follow:\n- No\n- Yes\n- Maybe', reply_markup=reply_markup)
+    query.edit_message_text(text='Cool! Do you have the message you want to send ready?\nHere are some of the guidelines it should follow:\n- Be positive.\n- Keep it under 3000 characters.\n- Avoid talking about the virus.', reply_markup=reply_markup)
 
 def message_too_long(update, context):
     yn_keyboard = [[telegram.InlineKeyboardButton("Ready", callback_data='y3')]]
