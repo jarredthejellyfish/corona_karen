@@ -38,6 +38,22 @@ def get_name(update, context):
                     telegram.InlineKeyboardButton("No", callback_data='n2')]]
 
     reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
+    if len(name) < 30:
+        name_text = "Nice to meet you <b>{}</b>! I'm excited to get your message to one of our patients!\nDid I get your name right?".format(name)
+        query.edit_message_text(parse_mode='HTML', text=name_text, reply_markup=reply_markup)
+    else:
+        yn_keyboard = [[telegram.InlineKeyboardButton("Ready", callback_data='y5')]]
+        reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
+        context.bot.send_message(chat_id=update.effective_chat.id, text="I'm sorry, your name is over 30 characters. Please make it shorter and send it again.".format(name), reply_markup=reply_markup)
+
+def name_too_long(update,context):
+    global name
+    name = update.message.text
+    dispatcher.remove_handler(plain_text_handler)
+    yn_keyboard = [[telegram.InlineKeyboardButton("Yes", callback_data='y2'),
+                    telegram.InlineKeyboardButton("No", callback_data='n2')]]
+
+    reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
     name_text = "Nice to meet you <b>{}</b>! I'm excited to get your message to one of our patients!\nDid I get your name right?".format(name)
     query.edit_message_text(parse_mode='HTML', text=name_text, reply_markup=reply_markup)
 
@@ -60,19 +76,17 @@ def ask_if_message_ready(update, context):
     reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
     query.edit_message_text(text='Cool! Do you have the message you want to send ready?\nHere are some of the guidelines it should follow:\n- Be positive.\n- Keep it under 3000 characters.\n- Avoid talking about the virus.', reply_markup=reply_markup)
 
-
-def message_too_long(update, context):
-    yn_keyboard = [[telegram.InlineKeyboardButton("Ready", callback_data='y3')]]
-    reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
-    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm sorry {}, your message is over 3000 characters and can't be sent. Please make it shorter and send it again".format(name), reply_markup=reply_markup)
-
 @run_async
 def get_message(update, context):
     global message
     message = update.message.text
     dispatcher.remove_handler(plain_text_handler)
+
     if len(message) > 3000:
-        message_too_long(update, context)
+        yn_keyboard = [[telegram.InlineKeyboardButton("Ready", callback_data='y3')]]
+        reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
+        context.bot.send_message(chat_id=update.effective_chat.id, text="I'm sorry {}, your message is over 3000 characters and can't be sent. Please make it shorter and send it again".format(name), reply_markup=reply_markup)
+
     yn_keyboard = [[telegram.InlineKeyboardButton("Send it!", callback_data='y4'),
                     telegram.InlineKeyboardButton("Let me rewrite...", callback_data='n4')]]
     reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
@@ -83,8 +97,10 @@ def get_message_rewrite(update, context):
     global message
     message = update.message.text
     dispatcher.remove_handler(plain_text_handler)
+
     if len(message) > 3000:
         message_too_long(update, context)
+
     yn_keyboard = [[telegram.InlineKeyboardButton("Send it!", callback_data='y4'),
                     telegram.InlineKeyboardButton("Let me rewrite...", callback_data='n4')]]
     reply_markup = telegram.InlineKeyboardMarkup(yn_keyboard)
@@ -127,6 +143,12 @@ def button(update, context):
         query.edit_message_text(text="Please send your rewritten message now.")
         plain_text_handler = MessageHandler(Filters.text, get_message_rewrite)
         dispatcher.add_handler(plain_text_handler)
+
+    if query.data == 'y5':
+        query.edit_message_text(text="Great! Please resend your name now.")
+        plain_text_handler = MessageHandler(Filters.text, name_too_long)
+        dispatcher.add_handler(plain_text_handler)
+
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
